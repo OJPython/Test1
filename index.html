@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Physics Practice Test</title>
+<style>
+:root{
+  --bg:#faf9f5; --surface:#ffffff; --surface-alt:#f3f1ec;
+  --text:#1f1e1c; --text-2:#5f5e5a; --text-3:#8a8880;
+  --line:#e2dfd7; --line-2:#cfcbc0;
+  --accent:#185fa5; --accent-bg:#e6f1fb; --accent-line:#85b7eb;
+  --warn:#854f0b; --warn-bg:#faeeda; --warn-line:#efc27a;
+  --no:#a32d2d; --no-bg:#fcebeb; --no-line:#f09595;
+  --charge:#d85a30;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1a1915; --surface:#242320; --surface-alt:#2e2d28;
+    --text:#edebe4; --text-2:#b4b2a9; --text-3:#8a8880;
+    --line:#3a3833; --line-2:#4a4842;
+    --accent:#85b7eb; --accent-bg:#0c3254; --accent-line:#185fa5;
+    --warn:#efc27a; --warn-bg:#3a2a10; --warn-line:#854f0b;
+    --no:#f09595; --no-bg:#3d1515; --no-line:#a32d2d;
+    --charge:#f0997b;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;
+  position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:2}
+header h1{font-size:20px;font-weight:600;margin:0}
+.sub{color:var(--text-2);font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 10px;font-weight:600}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;padding:11px 18px}
+@media (prefers-color-scheme: dark){button{color:#0b1e33}}
+button.ghost{background:var(--surface);color:var(--text);border-color:var(--line-2)}
+.hidden{display:none !important}
+ol.steps{padding-left:20px;margin:8px 0}
+ol.steps li{margin-bottom:6px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.marks{font-size:13px;color:var(--text-2);white-space:nowrap}
+.figure{display:flex;justify-content:center;margin:14px 0}
+.figure svg{width:100%;max-width:420px;height:auto}
+.task{background:var(--accent-bg);border:1px solid var(--accent-line);border-radius:8px;padding:12px 14px;margin-top:12px}
+.part{font-weight:600;margin-right:6px}
+.timer{font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;padding:6px 12px;border-radius:8px;
+  background:var(--surface-alt);border:1px solid var(--line)}
+.timer.low{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn)}
+.timer.up{background:var(--no-bg);border-color:var(--no-line);color:var(--no)}
+.big{font-size:44px;margin:0}
+.m{font-family:"Cambria Math","Times New Roman",Georgia,serif;font-style:italic;font-size:1.08em}
+.eq{display:flex;justify-content:center;align-items:center;gap:8px;margin:12px 0 4px;font-size:1.15em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle}
+.frac>span{padding:0 4px}
+.frac>span:first-child{border-bottom:1.5px solid currentColor}
+footer{text-align:center;color:var(--text-3);font-size:13px;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Physics practice test</h1>
+      <div class="sub" id="testTitle"></div>
+    </div>
+    <div id="timerBox" class="timer hidden">--:--</div>
+  </header>
+
+  <!-- Start -->
+  <section id="s-start">
+    <div class="card">
+      <h2>Before you start</h2>
+      <ol class="steps">
+        <li>Have paper, a pen and a calculator ready. Close your notes.</li>
+        <li>When you press <b>Start</b>, the questions and a timer appear.</li>
+        <li>Write all your working on paper. Show every step — marks are given for method, not just the answer.</li>
+        <li>When you finish, press <b>I've finished</b>.</li>
+      </ol>
+      <p class="sub" id="startInfo"></p>
+      <button id="btnStart">Start the test</button>
+    </div>
+  </section>
+
+  <!-- Questions -->
+  <section id="s-test" class="hidden">
+    <div id="questions"></div>
+    <div class="card"><button id="btnDone">I've finished</button></div>
+  </section>
+
+  <!-- End -->
+  <section id="s-end" class="hidden">
+    <div class="card" style="text-align:center">
+      <p class="big">✏️</p>
+      <h2 id="endTitle">Pens down</h2>
+      <p class="sub" id="endInfo"></p>
+      <div style="text-align:left;margin:18px 0">
+        <div class="task" style="margin-top:0"><b>Hand in your script.</b> We'll meet on campus so you can give me your answer pages to mark. Message me to set a time.</div>
+        <div class="task"><b>Keep your own copy.</b> Before you hand it in, take clear photos of every page, so you have your answers to look back on when we go through the marks.</div>
+      </div>
+      <button class="ghost" id="btnReview">Look at the questions again</button>
+    </div>
+  </section>
+
+  <footer>A test created by Odireleng for Mokgadi</footer>
+</div>
+
+<script>
+/* =========================================================
+   TEST CONTENT — edit this block to make a new test.
+   ========================================================= */
+const TEST = {
+  title: "Electric charge, field, capacitors and circuits",
+  minutes: 125,
+  questions: [
+    {
+      number: "1",
+      marks: 8,
+      text: `Two particles, each carrying charge <span class="m">+q</span>, are held at rest on the <span class="m">y</span> axis: particle 1 at <span class="m">y = +a</span> and particle 2 at <span class="m">y = −a</span>. The point <span class="m">P</span> lies on the <span class="m">x</span> axis a distance <span class="m">x</span> from the origin, as shown. Write your answers in terms of <span class="m">k</span>, <span class="m">q</span>, <span class="m">a</span> and <span class="m">x</span>.`,
+      figure: "twoCharges",
+      parts: [
+        { label: "(a)", marks: 3, text: `Copy the diagram and draw on it the electric field contribution at <span class="m">P</span> due to each particle, labelling them <b>E</b><sub>1</sub> and <b>E</b><sub>2</sub>. Hence explain why the <span class="m">y</span> component of the resultant electric field at <span class="m">P</span> is zero.` },
+        { label: "(b)", marks: 5, text: `Show that the magnitude of the resultant electric field at <span class="m">P</span> is
+          <div class="eq m"><span>E =</span><span class="frac"><span>2kqx</span><span>(x² + a²)<sup>3/2</sup></span></span></div>` }
+      ]
+    },
+    {
+      number: "2",
+      marks: 10,
+      text: `Two small identical metal spheres carry charges of <span class="m">q<sub>1</sub> = +2.0 μC</span> and <span class="m">q<sub>2</sub> = +3.0 μC</span>, respectively. The centres of the spheres are initially separated by a distance of 0.20 m.`,
+      parts: [
+        { label: "(a)", marks: 2, text: `Do the two spheres attract or repel each other? Briefly explain.` },
+        { label: "(b)", marks: 4, text: `Calculate the magnitude of the electric force between the two spheres.` },
+        { label: "(c)", marks: 2, text: `The distance between the spheres is now increased to 0.40 m. Without repeating the full calculation, determine the new magnitude of the electric force.` },
+        { label: "(d)", marks: 2, text: `Suppose the charge on the second sphere were changed from +3.0 μC to −3.0 μC, while keeping the separation equal to 0.20 m. How would the magnitude and direction of the force change?` }
+      ],
+      note: `Use <span class="m">k</span> = 9.0 × 10<sup>9</sup> N m²/C².`
+    },
+    {
+      number: "3",
+      marks: 10,
+      text: `A capacitor is charged and then disconnected from the battery.`,
+      parts: [
+        { label: "(a)", marks: 4, text: `The separation between the plates is doubled. What happens to the charge <span class="m">Q</span>, the electric field <span class="m">E</span>, and the potential difference <span class="m">V</span>? Give a one-line justification for each.` },
+        { label: "(b)", marks: 3, text: `A dielectric is now inserted between the plates. Does the electric field between the plates increase or decrease? Explain briefly in terms of polarization.` },
+        { label: "(c)", marks: 3, text: `In one or two sentences, explain why the capacitor stores electric potential energy when it is charged.` }
+      ]
+    },
+    {
+      number: "4",
+      marks: null,
+      text: `Two large, oppositely and uniformly charged parallel plates are held 10 mm apart. An electron is projected halfway between the plates, parallel to them, with an initial speed of
+        <div class="eq m"><span>v<sub>0</sub> = 5.0 × 10<sup>6</sup> m/s.</span></div>
+        The electron strikes the upper plate at a horizontal distance of 35 mm from the point where it was projected.`,
+      parts: [
+        { label: "(a)", marks: null, text: `Which plate is negatively charged?` },
+        { label: "(b)", marks: null, text: `What is the magnitude of the surface charge density on each plate?` }
+      ]
+    },
+    {
+      number: "5",
+      marks: null,
+      text: `A field-line diagram represents the electric field produced by three charged particles carrying charges
+        <div class="eq m"><span>+6.0 μC, &nbsp;&nbsp; −2.0 μC, &nbsp;&nbsp; −4.0 μC.</span></div>
+        In this diagram, 12 field lines leave the +6.0&nbsp;μC particle.`,
+      parts: [
+        { label: "(a)", marks: null, text: `How many field lines end on each of the two negatively charged particles? Explain your reasoning.` },
+        { label: "(b)", marks: null, text: `Draw each charge on its own, as an isolated particle, with its electric field lines. Use the same scale as part (a), so each sketch has the correct number of lines. Put arrows on the lines to show the direction of the field.` }
+      ]
+    }
+    ,{
+      number: "6",
+      marks: 5,
+      text: `A small, 3.00 g charged plastic ball is suspended by a 25.0 cm long string in a uniform electric field, as shown in the figure. The ball is in equilibrium when the string makes a 20.0° angle with the vertical.`,
+      figure: "hangingBall",
+      parts: [
+        { label: "", marks: null, text: `What is the net charge on the ball?` }
+      ],
+      note: `Use <span class="m">g</span> = 9.8 m/s².`
+    }
+    ,{
+      number: "7",
+      marks: 8,
+      text: `Two capacitor plates, each of area 0.05 m², are 1.5 cm apart. A slab of dielectric constant 4 and thickness 1.5 cm is placed a third of the way into the air gap between the plates, as shown. The composite can be considered to be two capacitors.`,
+      figure: "slabCapacitor",
+      parts: [
+        { label: "(a)", marks: 1, text: `Are the capacitors in series or in parallel?` },
+        { label: "(b)", marks: 7, text: `Calculate the new capacitance.` }
+      ],
+      note: `Use <span class="m">ε</span><sub>0</sub> = 8.85 × 10<sup>−12</sup> C²/(N m²).`
+    }
+    ,{
+      number: "8",
+      marks: 13,
+      text: `A small charged sphere of mass 0.4 g hangs by a thread between two oppositely charged vertical plates. The separation between the plates is 50 mm. A potential difference of 5&nbsp;kV between the plates causes the thread to make an angle of 45° with the vertical.`,
+      parts: [
+        { label: "(a)", marks: 3, text: `Draw a free-body diagram for the sphere. Show and label every force acting on it, and mark the 45° angle.` },
+        { label: "(b)", marks: 10, text: `Calculate the magnitude of the charge on the sphere.` }
+      ],
+      note: `Use <span class="m">g</span> = 9.8 m/s².`
+    }
+    ,{
+      number: "9",
+      marks: null,
+      text: `A small sphere carrying 6.0&nbsp;nC of charge is placed 100&nbsp;mm from a small sphere carrying 3.0&nbsp;nC of charge. Assume the spheres are tiny relative to the 100&nbsp;mm separation distance.`,
+      parts: [
+        { label: "", marks: null, text: `At what position on the line joining the spheres is the electric field magnitude zero?` }
+      ]
+    }
+    ,{
+      number: "10",
+      marks: null,
+      text: `Two point charges, <span style="white-space:nowrap"><span class="m">Q</span><sub>1</sub> = +5.8&nbsp;μC</span> and <span style="white-space:nowrap"><span class="m">Q</span><sub>2</sub> = −8.0&nbsp;μC</span>, are 6.0&nbsp;cm apart, as shown. Assume no other charges are nearby.`,
+      figure: "midpoint",
+      parts: [
+        { label: "", marks: null, text: `Determine the magnitude and direction of the electric field at the point midway between the two charges.` }
+      ]
+    }
+    ,{
+      number: "11",
+      marks: 20,
+      text: `Three capacitors are connected to a battery as shown in the figure. Take <span class="m">C</span><sub>1</sub> = <span class="m">C</span><sub>2</sub> = <span class="m">C</span><sub>3</sub> = <span style="white-space:nowrap"><span class="m">C</span> = 3.0&nbsp;μF</span>.`,
+      figure: "capCircuit",
+      parts: [
+        { label: "(a)", marks: 4, text: `Determine the capacitance of a single capacitor that would have the same effect as the combination shown in the figure.` },
+        { label: "(b)", marks: 6, text: `If the battery voltage is 4.0&nbsp;V, determine the charge on each capacitor and the voltage across each.` },
+        { label: "(c)", marks: 10, text: `A parallel-plate capacitor with air between the plates is charged to a voltage of 300&nbsp;V, and the battery is disconnected. The charged capacitor is then connected to an uncharged capacitor with the same dimensions but with the space between the plates filled with a dielectric. If the p.d. across the combination is 60&nbsp;V, calculate the dielectric constant of the dielectric.` }
+      ]
+    }
+    ,{
+      number: "12",
+      marks: null,
+      text: `Three resistors are connected to a 12.0&nbsp;V battery as shown in the figure.`,
+      figure: "resistors",
+      parts: [
+        { label: "", marks: null, text: `Determine the equivalent resistance of the circuit.` }
+      ]
+    }
+  ]
+};
+
+/* ---------- figures ---------- */
+const FIGURES = {
+  resistors: `
+<svg viewBox="0 0 420 210" role="img" aria-label="750 ohm and 680 ohm resistors in parallel; that pair is in series with a 990 ohm resistor and a 12.0 V battery">
+  <g stroke="var(--text)" stroke-width="1.6" fill="none" stroke-linejoin="round">
+    <line x1="110" y1="40" x2="330" y2="40"/>
+    <path d="M110 40 V70 l8 5 l-16 10 l16 10 l-16 10 l16 10 l-16 10 l8 5 V160"/><path d="M220 40 V70 l8 5 l-16 10 l16 10 l-16 10 l16 10 l-16 10 l8 5 V160"/><path d="M330 40 V70 l8 5 l-16 10 l16 10 l-16 10 l16 10 l-16 10 l8 5 V160"/>
+    <line x1="110" y1="160" x2="262" y2="160"/>
+    <line x1="274" y1="160" x2="330" y2="160"/>
+    <line x1="262" y1="146" x2="262" y2="174"/>
+    <line x1="274" y1="153" x2="274" y2="167" stroke-width="3"/>
+  </g>
+  <circle cx="220" cy="40" r="3.5" fill="var(--text)"/>
+  <circle cx="220" cy="160" r="3.5" fill="var(--text)"/>
+  <g fill="var(--text)" font-family="Georgia,serif" font-size="16">
+    <text x="92" y="106" text-anchor="end">750 Ω</text>
+    <text x="202" y="106" text-anchor="end">680 Ω</text>
+    <text x="346" y="106">990 Ω</text>
+    <text x="268" y="196" text-anchor="middle">12.0 V</text>
+  </g>
+</svg>`,
+  capCircuit: `
+<svg viewBox="0 0 420 250" role="img" aria-label="Circuit: C2 and C3 in parallel, that pair in series with C1 and a battery V">
+  <g stroke="var(--text)" stroke-width="1.6" fill="none">
+    <polyline points="140,110 60,110 60,215 105,215"/>
+    <polyline points="280,110 360,110 360,215 305,215"/>
+    <line x1="117" y1="215" x2="293" y2="215"/>
+    <polyline points="205,50 140,50 140,155 205,155"/>
+    <polyline points="215,50 280,50 280,155 215,155"/>
+    <line x1="205" y1="36" x2="205" y2="64"/><line x1="215" y1="36" x2="215" y2="64"/>
+    <line x1="205" y1="141" x2="205" y2="169"/><line x1="215" y1="141" x2="215" y2="169"/>
+    <line x1="293" y1="201" x2="293" y2="229"/><line x1="305" y1="201" x2="305" y2="229"/>
+    <line x1="105" y1="199" x2="105" y2="231"/>
+    <line x1="117" y1="207" x2="117" y2="223" stroke-width="3"/>
+  </g>
+  <g fill="var(--text)" font-family="Georgia,serif" font-size="16" font-style="italic" text-anchor="middle">
+    <text x="210" y="26">C₂</text>
+    <text x="210" y="190">C₃</text>
+    <text x="299" y="192">C₁</text>
+    <text x="111" y="190">V</text>
+  </g>
+</svg>`,
+  midpoint: `
+<svg viewBox="0 0 420 150" role="img" aria-label="Q1 positive on the left and Q2 negative on the right, 6.0 cm apart, with the midpoint P marked half-way between them">
+  <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <line x1="30" y1="70" x2="390" y2="70" stroke="var(--line-2)" stroke-width="1.2"/>
+  <circle cx="80" cy="70" r="13" fill="var(--surface-alt)" stroke="var(--charge)" stroke-width="2"/>
+  <circle cx="340" cy="70" r="13" fill="var(--surface-alt)" stroke="var(--accent)" stroke-width="2"/>
+  <circle cx="210" cy="70" r="4" fill="var(--text)"/>
+  <g fill="var(--text)" font-size="18" font-weight="600" text-anchor="middle" font-family="Arial,sans-serif">
+    <text x="80" y="76">+</text><text x="340" y="76">−</text>
+  </g>
+  <g fill="var(--text)" font-family="Georgia,serif" font-size="16" text-anchor="middle">
+    <text x="80" y="38" font-style="italic">Q₁ &gt; 0</text>
+    <text x="340" y="38" font-style="italic">Q₂ &lt; 0</text>
+    <text x="210" y="52" font-style="italic">P</text>
+    <text x="145" y="128" font-style="italic">ℓ/2</text>
+    <text x="275" y="128" font-style="italic">ℓ/2</text>
+  </g>
+  <g style="color:var(--text-2)" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3">
+    <line x1="84" y1="104" x2="206" y2="104" marker-start="url(#ah4)" marker-end="url(#ah4)"/>
+    <line x1="214" y1="104" x2="336" y2="104" marker-start="url(#ah4)" marker-end="url(#ah4)"/>
+  </g>
+</svg>`,
+  slabCapacitor: `
+<svg viewBox="0 0 420 200" role="img" aria-label="Two horizontal capacitor plates 1.5 cm apart; a hatched dielectric slab fills the full gap over the right-hand third of the plates">
+  <defs>
+    <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="var(--surface-alt)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--text-2)" stroke-width="2.5"/>
+    </pattern>
+    <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+  </defs>
+  <rect x="215" y="42" width="95" height="116" fill="url(#hatch)" stroke="var(--text-2)" stroke-width="1"/>
+  <line x1="25" y1="40" x2="310" y2="40" stroke="var(--text)" stroke-width="3"/>
+  <line x1="25" y1="160" x2="310" y2="160" stroke="var(--text)" stroke-width="3"/>
+  <g style="color:var(--text)" stroke="currentColor" stroke-width="1.2">
+    <line x1="335" y1="148" x2="335" y2="52" marker-start="url(#ah3)" marker-end="url(#ah3)"/>
+  </g>
+  <text x="348" y="106" fill="var(--text)" font-family="Georgia,serif" font-size="16">1.5 cm</text>
+  <text x="120" y="106" fill="var(--text-2)" font-family="Georgia,serif" font-size="15" text-anchor="middle">air</text>
+  <text x="262" y="185" fill="var(--text-2)" font-family="Georgia,serif" font-size="15" text-anchor="middle">dielectric, κ = 4</text>
+</svg>`,
+  hangingBall: `
+<svg viewBox="0 0 420 320" role="img" aria-label="A ball of mass 3.00 g hangs from a 25.0 cm string at 20.0 degrees to the vertical, displaced to the right, in a uniform electric field of 1.50 times 10 to the 3 newtons per coulomb pointing to the right">
+  <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <rect x="100" y="30" width="110" height="8" fill="var(--line-2)"/>
+  <line x1="155" y1="38" x2="155" y2="290" stroke="var(--text-2)" stroke-dasharray="4 4" stroke-width="1"/>
+  <line x1="155" y1="38" x2="230" y2="245" stroke="var(--text)" stroke-width="1.6"/>
+  <path d="M155 98 A60 60 0 0 0 175.5 94.4" fill="none" stroke="var(--text)" stroke-width="1.2"/>
+  <circle cx="234" cy="256" r="12" fill="var(--surface-alt)" stroke="var(--charge)" stroke-width="2"/>
+  <g style="color:var(--accent)" stroke="currentColor" stroke-width="1.4">
+    <line x1="285" y1="120" x2="395" y2="120" marker-end="url(#ah2)"/>
+    <line x1="285" y1="160" x2="395" y2="160" marker-end="url(#ah2)"/>
+    <line x1="285" y1="200" x2="395" y2="200" marker-end="url(#ah2)"/>
+    <line x1="285" y1="240" x2="395" y2="240" marker-end="url(#ah2)"/>
+    <line x1="285" y1="280" x2="395" y2="280" marker-end="url(#ah2)"/>
+  </g>
+  <g style="color:var(--text)" stroke="currentColor" stroke-width="1.2">
+    <line x1="30" y1="150" x2="75" y2="150" marker-end="url(#ah2)"/>
+    <line x1="40" y1="160" x2="40" y2="115" marker-end="url(#ah2)"/>
+  </g>
+  <g fill="var(--text)" font-family="Georgia,serif" font-size="16">
+    <text x="285" y="95" font-weight="600">E = 1.50 × 10³ N/C</text>
+    <text x="198" y="150">25.0 cm</text>
+    <text x="146" y="122" text-anchor="end">20.0°</text>
+    <text x="234" y="296" text-anchor="middle" font-style="italic">m = 3.00 g</text>
+    <text x="82" y="155" font-style="italic">x</text>
+    <text x="35" y="108" font-style="italic">y</text>
+  </g>
+</svg>`,
+  twoCharges: `
+<svg viewBox="0 0 420 300" role="img" aria-label="Two charges +q on the y axis at y=+a and y=-a, point P on the x axis at distance x">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <g style="color:var(--text)" stroke="currentColor" fill="none" stroke-width="1.4">
+    <line x1="30" y1="150" x2="390" y2="150" marker-end="url(#ah)"/>
+    <line x1="110" y1="280" x2="110" y2="20" marker-end="url(#ah)"/>
+  </g>
+  <g stroke="var(--text-2)" stroke-dasharray="2 4" stroke-width="1.4" fill="none">
+    <line x1="110" y1="70" x2="300" y2="150"/>
+    <line x1="110" y1="230" x2="300" y2="150"/>
+  </g>
+  <g style="color:var(--text-2)" stroke="currentColor" stroke-width="1" fill="none">
+    <line x1="114" y1="175" x2="296" y2="175" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  </g>
+  <circle cx="110" cy="70" r="8" fill="var(--surface-alt)" stroke="var(--charge)" stroke-width="2"/>
+  <circle cx="110" cy="230" r="8" fill="var(--surface-alt)" stroke="var(--charge)" stroke-width="2"/>
+  <circle cx="300" cy="150" r="5" fill="var(--text)"/>
+  <g fill="var(--text)" font-family="Georgia,serif" font-style="italic" font-size="17">
+    <text x="62" y="76">+q</text><text x="62" y="236">+q</text>
+    <text x="126" y="62">y = +a</text><text x="126" y="252">y = −a</text>
+    <text x="294" y="134">P</text><text x="200" y="196">x</text>
+    <text x="398" y="156">x</text><text x="104" y="16">y</text>
+  </g>
+</svg>`
+};
+
+/* ---------- page logic ---------- */
+const $ = id => document.getElementById(id);
+const allMarked = TEST.questions.every(q=>q.marks);
+const totalMarks = TEST.questions.reduce((s,q)=>s+(q.marks||0),0);
+let timerId = null, endAt = 0, startedAt = 0;
+
+$("testTitle").textContent = TEST.title;
+$("startInfo").textContent = `${TEST.questions.length} question${TEST.questions.length>1?"s":""} · ${allMarked ? totalMarks+" marks · " : ""}${TEST.minutes} minutes`;
+
+function show(id){
+  ["s-start","s-test","s-end"].forEach(s=>$(s).classList.toggle("hidden", s!==id));
+  window.scrollTo(0,0);
+}
+function buildQuestions(){
+  $("questions").innerHTML = TEST.questions.map(q=>`
+    <div class="card">
+      <div class="qhead"><h2>Question ${q.number}</h2><span class="marks">${q.marks ? q.marks+(q.marks==1?" mark":" marks") : ""}</span></div>
+      <div>${q.text}</div>
+      ${q.figure ? `<div class="figure">${FIGURES[q.figure]}</div>` : ""}
+      ${q.parts.map(p=>`<div class="task"><div class="qhead"><span class="part">${p.label || ""}</span><span class="marks">${p.marks ? p.marks+(p.marks==1?" mark":" marks") : ""}</span></div>${p.text}</div>`).join("")}
+      ${q.note ? `<p class="sub" style="margin:12px 0 0">${q.note}</p>` : ""}
+    </div>`).join("");
+}
+function tick(){
+  const left = Math.max(0, Math.round((endAt-Date.now())/1000));
+  const box = $("timerBox");
+  box.textContent = `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}`;
+  box.classList.toggle("low", left>0 && left<=120);
+  box.classList.toggle("up", left===0);
+  if (left===0) finish(true);
+}
+function finish(timeUp){
+  if (timerId){ clearInterval(timerId); timerId = null; }
+  const used = Math.min(TEST.minutes, Math.max(1, Math.round((Date.now()-startedAt)/60000)));
+  $("endTitle").textContent = timeUp ? "Time is up — pens down" : "Pens down";
+  $("endInfo").textContent = `Time used: about ${used} of ${TEST.minutes} minutes`;
+  show("s-end");
+}
+$("btnStart").onclick = ()=>{
+  buildQuestions();
+  startedAt = Date.now();
+  endAt = startedAt + TEST.minutes*60000;
+  $("timerBox").classList.remove("hidden");
+  tick(); timerId = setInterval(tick, 1000);
+  show("s-test");
+};
+$("btnDone").onclick = ()=> finish(false);
+$("btnReview").onclick = ()=>{ $("btnDone").classList.add("hidden"); show("s-test"); };
+</script>
+</body>
+</html>
